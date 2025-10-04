@@ -23,6 +23,5 @@ media/
 .vscode/
 .idea/
 
-# Ignore the original image folder because we are using a zip file
-deepzoom_output/
+
 images/

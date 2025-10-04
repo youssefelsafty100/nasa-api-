@@ -2,13 +2,9 @@
     "builds": [
         {
             "src": "dzi_project/wsgi.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "build_files.sh",
-            "use": "@vercel/static-build",
+            "use": "@vercel/python",
             "config": {
-                "distDir": "staticfiles"
+                "maxLambdaSize": "15mb"
             }
         }
     ],
