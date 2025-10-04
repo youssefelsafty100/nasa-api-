@@ -1,0 +1,28 @@
+# Database
+db.sqlite3
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env
+
+# Static files collected by collectstatic
+staticfiles/
+
+# Media files
+media/
+
+# IDE files
+.vscode/
+.idea/
+
+# Ignore the original image folder because we are using a zip file
+deepzoom_output/
+images/

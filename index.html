@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Zoom Image Gallery</title>
+    <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+        .gallery-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+        .image-entry {
+            margin-bottom: 40px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background-color: #2b2b2b;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .image-title {
+            padding: 15px;
+            margin: 0;
+            background-color: #333;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-size: 1.2em;
+        }
+        .viewer {
+            width: 100%;
+            height: 600px; /* You can adjust the height of the viewers */
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My High-Resolution Image Gallery 🔭</h1>
+
+    <div id="gallery-container" class="gallery-container">
+        </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gallery = document.getElementById('gallery-container');
+
+            fetch('data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok. Is data.json file present?');
+                    }
+                    return response.json();
+                })
+                .then(images => {
+                    if (images.length === 0) {
+                        gallery.innerHTML = '<p style="text-align:center;">No images found. Please run the Python scripts to generate images and the data.json file.</p>';
+                        return;
+                    }
+                    
+                    images.forEach((image, index) => {
+                        const entryDiv = document.createElement('div');
+                        entryDiv.className = 'image-entry';
+
+                        const title = document.createElement('h2');
+                        title.className = 'image-title';
+                        title.textContent = image.title;
+                        entryDiv.appendChild(title);
+
+                        const viewerId = 'openseadragon-viewer-' + index;
+                        const viewerDiv = document.createElement('div');
+                        viewerDiv.id = viewerId;
+                        viewerDiv.className = 'viewer';
+                        entryDiv.appendChild(viewerDiv);
+
+                        gallery.appendChild(entryDiv);
+
+                        // Initialize OpenSeadragon on the new div
+                        OpenSeadragon({
+                            id: viewerId, // <-- THIS IS THE CORRECTED LINE
+                            prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
+                            tileSources: image.url,
+                            showNavigator: true,
+                            navigatorPosition: 'BOTTOM_RIGHT',
+                            constrainDuringPan: true
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading images:', error);
+                    gallery.innerHTML = `<p style="text-align:center; color: #ff6b6b;">Error loading image data. Check the browser console (F12) for details. <br><strong>Important:</strong> You may need to run a local web server to view this page.</p>`;
+                });
+        });
+    </script>
+
+</body>
+</html>

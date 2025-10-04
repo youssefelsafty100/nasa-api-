@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DZI API Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .viewer {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        .image-selector {
+            margin: 20px 0;
+        }
+
+        .image-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .image-card {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #f9f9f9;
+            transition: background 0.2s;
+        }
+
+        .image-card:hover {
+            background: #e9e9e9;
+        }
+
+        .image-card.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .api-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .code {
+            background: #e9ecef;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Django DZI API Test</h1>
+
+        <div class="api-info">
+            <h3>API Information</h3>
+            <p><strong>Base URL:</strong> <span class="code">http://127.0.0.1:8000</span></p>
+            <p><strong>Images List Endpoint:</strong> <span class="code">GET /api/images/</span></p>
+            <p><strong>Populate Database:</strong> <span class="code">GET /api/populate/</span></p>
+        </div>
+
+        <div class="image-selector">
+            <h3>Available Images</h3>
+            <p>Click on an image below to view it:</p>
+            <div class="image-list" id="imageList">
+                <div class="loading">Loading images...</div>
+            </div>
+        </div>
+
+        <div class="viewer" id="viewer"></div>
+    </div>
+
+    <script>
+        const baseUrl = 'http://127.0.0.1:8000';
+        let viewer = null;
+        let images = [];
+
+        // Initialize OpenSeadragon viewer
+        function initViewer() {
+            viewer = OpenSeadragon({
+                id: "viewer",
+                prefixUrl: "https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/images/",
+                showNavigator: true,
+                navigatorPosition: "TOP_RIGHT",
+                navigatorSizeRatio: 0.15,
+                toolbar: "toolbar",
+                showZoomControl: true,
+                showHomeControl: true,
+                showFullPageControl: true,
+                showSequenceControl: false,
+                tileSources: []
+            });
+        }
+
+        // Fetch images from API
+        async function fetchImages() {
+            try {
+                const response = await fetch(`${baseUrl}/api/images/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                images = await response.json();
+                renderImageList();
+
+                // Load first image by default
+                if (images.length > 0) {
+                    loadImage(0);
+                }
+            } catch (error) {
+                console.error('Error fetching images:', error);
+                document.getElementById('imageList').innerHTML = `
+                    <div style="color: red;">Error loading images: ${error.message}</div>
+                    <div>Make sure the Django server is running on port 8000</div>
+                `;
+            }
+        }
+
+        // Render the list of available images
+        function renderImageList() {
+            const imageList = document.getElementById('imageList');
+            imageList.innerHTML = images.map((image, index) => `
+                <div class="image-card" onclick="loadImage(${index})" data-index="${index}">
+                    <strong>${image.title}</strong><br>
+                    <small>ID: ${image.id}</small>
+                </div>
+            `).join('');
+        }
+
+        // Load a specific image in the viewer
+        function loadImage(index) {
+            if (!viewer || !images[index]) return;
+
+            const image = images[index];
+            const dzi_url = `${baseUrl}${image.url}`;
+
+            console.log(`Loading image: ${image.title}`);
+            console.log(`DZI URL: ${dzi_url}`);
+
+            // Update active image card
+            document.querySelectorAll('.image-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`[data-index="${index}"]`).classList.add('active');
+
+            // Load the new image
+            viewer.open(dzi_url);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initViewer();
+            fetchImages();
+        });
+    </script>
+</body>
+
+</html>
