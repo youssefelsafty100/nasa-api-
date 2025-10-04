@@ -5,25 +5,15 @@ import os
 
 def home_view(request):
     """
-    Home page view that provides API information
+    Provides a simple JSON response for the home page.
     """
-    # Check if template exists
-    template_path = os.path.join(os.path.dirname(__file__), '..', 'templates', 'home.html')
-    if os.path.exists(template_path):
-        return render(request, 'home.html')
-    else:
-        # Fallback to JSON response if template doesn't exist
-        api_info = {
-            "message": "Django DZI API Server",
-            "description": "This server provides Deep Zoom Image (DZI) files for use with OpenSeadragon or other viewers.",
-            "endpoints": {
-                "images_list": "/api/images/",
-                "populate_database": "/api/populate/"
-            },
-            "usage": "Visit /api/images/ to get a JSON list of all available DZI images",
-            "documentation": "See FRONTEND_DOCUMENTATION.md for integration instructions"
-        }
-        return JsonResponse(api_info)
+    api_info = {
+        "message": "Welcome to the NASA Deep Zoom Image API",
+        "description": "This server provides DZI data for space imagery.",
+        "api_endpoint": "/api/",
+        "usage": "Visit the API endpoint to get a JSON list of all available images."
+    }
+    return JsonResponse(api_info)
 
 def redirect_to_api(request):
     """
