@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django DZI API Server</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      .endpoint {
+        background-color: #f8f9fa;
+        border-left: 4px solid #007bff;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .endpoint h3 {
+        margin-top: 0;
+        color: #007bff;
+      }
+      .endpoint a {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
+      .endpoint a:hover {
+        background-color: #0056b3;
+      }
+      .info {
+        background-color: #e9f7ef;
+        border-left: 4px solid #28a745;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .code {
+        background-color: #f1f1f1;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Django DZI API Server</h1>
+
+      <div class="info">
+        <h2>Welcome to the DZI Image API Server</h2>
+        <p>This server provides Deep Zoom Image (DZI) files for use with OpenSeadragon or other deep zoom viewers.</p>
+      </div>
+
+      <div class="endpoint">
+        <h3>🖼️ Images API Endpoint</h3>
+        <p>Get a JSON list of all available DZI images:</p>
+        <p>
+          <span class="code">GET /api/images/</span>
+        </p>
+        <a href="/api/images/">View Images API</a>
+      </div>
+
+      <div class="endpoint">
+        <h3>🔄 Populate Database</h3>
+        <p>Utility endpoint to populate database from data.json:</p>
+        <p>
+          <span class="code">GET /api/populate/</span>
+        </p>
+        <a href="/api/populate/">Populate Database</a>
+      </div>
+
+      <div class="info">
+        <h3>📚 Documentation</h3>
+        <p>For frontend integration instructions, see:</p>
+        <ul>
+          <li>
+            <span class="code">FRONTEND_DOCUMENTATION.md</span>
+          </li>
+          <li>
+            <span class="code">PROJECT_STATUS.md</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="endpoint">
+        <h3>🔧 Server Information</h3>
+        <p>
+          <strong>Status:</strong> Running
+        </p>
+        <p>
+          <strong>Images Available:</strong> 7
+        </p>
+        <p>
+          <strong>Base URL:</strong> <span class="code">http://127.0.0.1:8000</span>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
