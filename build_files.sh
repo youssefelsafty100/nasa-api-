@@ -3,8 +3,8 @@
 # Unzip the static assets first
 unzip -o deepzoom_output.zip
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies using specific python version
+python3.9 -m pip install -r requirements.txt
 
-# Collect static files
-python manage.py collectstatic --noinput
+# Collect static files using specific python version
+python3.9 manage.py collectstatic --noinput
