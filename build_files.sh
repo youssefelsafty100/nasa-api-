@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Unzip the static assets first
-unzip -o deepzoom_output.zip
+echo "--- Starting Build Process ---"
 
-# Install dependencies using specific python version
-python3.9 -m pip install -r requirements.txt
-
-# Run migrations
-python3.9 manage.py migrate --noinput
-
-# Collect static files using specific python version
-python3.9 manage.py collectstatic --noinput
-
-# Initialize database with data
-python3.9 manage.py init_data
+# Install dependencies
+pip install -r requirements.txt
+    
+# Run database migrations to create tables
+echo "--- Running Migrations ---"
+python manage.py migrate
+    
+# Populate the database with data
+echo "--- Populating Database ---"
+python manage.py init_data
+    
+echo "--- Build Process Finished ---"
