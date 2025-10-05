@@ -1,22 +1,25 @@
-from django.http import JsonResponse
-from django.urls import path, include
-from django.shortcuts import redirect, render
 import os
+import json
+from django.conf import settings
+from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+# The view name can be anything, but the logic inside is what matters.
+class DZIImageListView(APIView):
+    def get(self, request, format=None):
+        # Assumes data.json is in the root directory of your project
+        json_file_path = os.path.join(settings.BASE_DIR, 'data.json')
+        
+        try:
+            with open(json_file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return Response(data, status=status.HTTP_200_OK)
+        except FileNotFoundError:
+            return Response({"error": "data.json not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 def home_view(request):
-    """
-    Provides a simple JSON response for the home page.
-    """
-    api_info = {
-        "message": "Welcome to the NASA Deep Zoom Image API",
-        "description": "This server provides DZI data for space imagery.",
-        "api_endpoint": "/api/",
-        "usage": "Visit the API endpoint to get a JSON list of all available images."
-    }
-    return JsonResponse(api_info)
-
-def redirect_to_api(request):
-    """
-    Redirect root URL to the images API endpoint
-    """
-    return redirect('/api/images/')
+    """Render the home page with API documentation"""
+    return render(request, 'home.html')
