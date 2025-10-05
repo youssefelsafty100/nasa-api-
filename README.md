@@ -12,30 +12,66 @@ This Django REST API serves Deep Zoom Image (DZI) files for use with OpenSeadrag
 
 ## Setup Instructions
 
-### 1. Install Dependencies
+### 1. Clone the Repository
 
 ```bash
-pip install django djangorestframework
+git clone <repository-url>
+cd nasa-api
 ```
 
-### 2. Run Migrations
+### 2. Install Dependencies
 
 ```bash
-python manage.py makemigrations
+pip install -r requirements.txt
+```
+
+### 3. Environment Variables
+
+Create a `.env` file based on `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Then edit the `.env` file to set your environment variables:
+
+- `SECRET_KEY`: Django secret key (required for production)
+- `DEBUG`: Set to `False` for production
+- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
+
+### 4. Obtain DZI Files
+
+This repository does not include the actual DZI files due to their large size. You need to obtain them separately and place them in the `media/` directory.
+
+If you have your own DZI files:
+1. Place your `.dzi` files and their corresponding `_files` directories in the `media/` directory
+2. Update the `data.json` file with the metadata for your images
+
+If you want to use sample NASA images:
+1. Download the deep zoom images from the source
+2. Extract them to the `media/` directory
+3. Ensure the structure matches what's expected in `data.json`
+
+### 5. Run Migrations
+
+```bash
 python manage.py migrate
 ```
 
-### 3. Populate Database
+### 6. Populate Database
 
-First, make sure your `deepzoom_output` folder is copied to the `media` directory (this should already be done).
+Populate the database from your existing `data.json`:
 
-Then populate the database from your existing `data.json`:
+```bash
+python manage.py init_data
+```
 
+Alternatively, you can use the API endpoint:
 ```bash
 curl http://127.0.0.1:8000/api/populate/
 ```
 
-### 4. Start Development Server
+### 7. Start Development Server
 
 ```bash
 python manage.py runserver
@@ -123,7 +159,7 @@ d:/courses/Nasa/
 │   ├── serializers.py          # DRF serializers
 │   ├── urls.py                 # API URL patterns
 │   └── ...
-├── media/                      # Media files (DZI + tiles)
+├── media/                      # Media files (DZI + tiles) - NOT included in repo
 │   ├── Carina_Nebula_by_ESO.dzi
 │   ├── Carina_Nebula_by_ESO_files/
 │   ├── Hubble_M31Mosaic_2025.dzi
@@ -138,38 +174,45 @@ d:/courses/Nasa/
 
 For production deployment:
 
-1. Set `DEBUG = False` in `settings.py`
+1. Set `DEBUG = False` in environment variables
 2. Configure `ALLOWED_HOSTS` with your domain
 3. Use a production WSGI server (gunicorn, uwsgi)
 4. Serve static/media files with nginx or similar
-5. Use environment variables for sensitive settings
+5. Use a strong SECRET_KEY
 
 ### Environment Variables Example
 
-```python
-import os
-from pathlib import Path
-
-# settings.py
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+```bash
+# .env file
+DEBUG=False
+SECRET_KEY=your-very-secure-secret-key-here
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 ```
 
-## Notes
+### Vercel Deployment
 
-- The API uses Django REST Framework for consistent JSON responses
-- Media files are served directly by Django in development
-- All DZI files and their tile directories must be in the `media/` folder
-- The database automatically tracks all available images
-- CORS is enabled for cross-origin requests
+The project is configured for Vercel deployment with the `vercel.json` file. During deployment:
+
+1. The `build_files.sh` script runs to:
+   - Unzip deep zoom assets (if deepzoom_output.zip exists)
+   - Install dependencies
+   - Run migrations
+   - Initialize data
+2. The database is configured to use `/tmp/db.sqlite3` which is writable on Vercel
+
+## Security Notes
+
+- Never commit your `.env` file to version control
+- Always use a strong, random SECRET_KEY in production
+- The default SECRET_KEY in the code is only for development
+- Set DEBUG=False in production environments
 
 ## Troubleshooting
 
 ### Images not loading
 - Verify DZI files are in the `media/` directory
 - Check that the Django server is running
-- Ensure the `populate` endpoint was called to load image metadata
+- Ensure the database was populated with image metadata
 
 ### CORS issues
 - The API allows all origins in development

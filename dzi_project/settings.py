@@ -13,12 +13,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g()53i=1+@(mi0vo=**2nr!+$+ddw^^kk=^mj7y07ma&$*7h7^'
+# Use environment variable in production, fallback to default for development
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-g()53i=1+@(mi0vo=**2nr!+$+ddw^^kk=^mj7y07ma&$*7h7^')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Use environment variable in production, fallback to True for development
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -70,12 +72,23 @@ WSGI_APPLICATION = 'dzi_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use a writable location for SQLite database in serverless environments
+if os.environ.get('VERCEL_ENV'):
+    # For Vercel deployment - use /tmp directory which is writable
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/tmp/db.sqlite3',
+        }
     }
-}
+else:
+    # For local development - use file-based SQLite database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
